@@ -1,7 +1,7 @@
 # What's Good Here
 This is a web app that shows different restaurants and their dishes. Authorized users are allowed to rate these dishes and contribute to the database. 
 
-# UML Diagram
+## UML Diagram
 ![UML Diagram](media/UML_Diagram.png)
 
 ## Requirements
