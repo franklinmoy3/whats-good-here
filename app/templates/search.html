@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>What's Good Here</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" href="{{ url_for('static', filename='img/cs.ico') }}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/custom.css') }}">
+
+    </head>
+
+    <body>
+
+    <main role="main" class="container extra-bottom">
+      <h1 class="mt-5">What's Good Here?</h1>
+      <p><mark>Searching for restaurants named like "{{query}}"</mark></p>
+    </main>
+
+    <!-- Button group -->
+    <div style="text-align: center;">
+        <a href="{{url_for('homepage')}}"><button type="button" class="btn btn-outline-info btn-sm">Back</button></a>
+        <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#search-modal" data-source="Restaurant Search">Search Restaurants</button>
+        <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#restaurant-modal" data-source="New Restaurant">Add Restaurant</button>
+    </div>
+
+    <!-- Search Button Modal -->
+    <div class="container">
+        <form id="search-form" action="{{url_for('searchpage')}}" method="POST">
+            <div class="modal fade" id="search-modal" tabindex="-1" aria-labelledby="Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="Label">Search Restaurants</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="search-form-display-name">Name</span>
+                            <input type="text" class="form-control" name="search-query" placeholder="Restaurant Name" aria-label="restaurant-name" aria-describedby="basic-addon1">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button value="Submit" class="btn btn-primary" type="submit" name="submit-search">Search</button>
+                    </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- New Restaurant Modal -->
+    <div class="container">    
+        <form id="restaurant-form" action="{{url_for('create')}}" method="POST">
+            <div class="modal fade" id="restaurant-modal" tabindex="-1" aria-labelledby="Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Label">Add a Restaurant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="restaurant-form-display-name">Name</span>
+                        <input type="text" class="form-control" name="rest-name" placeholder="Restaurant Name" aria-label="restaurant-name" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="restaurant-form-display-addr">Address</span>
+                        <input type="text" class="form-control" name="rest-addr" placeholder="Restaurant Address" aria-label="restaurant-addr" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="restaurant-form-display-zip">Zip Code</span>
+                        <input type="text" class="form-control" name="rest-zip" placeholder="Restaurant Zip Code" aria-label="restaurant-zip" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="rating-form-display-user">Your User Number</span>
+                        <input type="text" class="form-control" name="rating-user-id" placeholder="Your given user number" aria-label="rating-user-id" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="restaurant-form-display-password">Password</span>
+                        <input type="password" class="form-control" name="rest-pass" placeholder="Admin Password" aria-label="restaurant-password" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <!-- <button id="submit-restaurant" type="button" class="btn btn-primary">Save changes</button> -->
+                    <button value="Submit" class="btn btn-primary" type="submit" name="submit-add">Save Changes</button>
+                </div>
+                </div>
+            </div>
+            </div>
+        </form>
+    </div>
+
+    <!--Restaurant Table-->
+    <div class="container table-responsive">          
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="restaurant">Name</th>
+            <th class="address">Address</th>
+            <th class="zipcode">Zip Code</th>
+            <th class="menu">Menu</th>
+            <th class="update">Edit</th>
+            <th class="update">Remove</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for restaurant in restaurants %}
+            <tr>
+                <td>{{restaurant.RestaurantName}}</td>
+                <td>{{restaurant.Address}}</td>
+                <td>{{restaurant.ZipCode}}</td>
+
+                <td><a href="{{url_for('menupage', restaurant_id=restaurant.RestaurantID)}}"><button type="button" class="btn btn-outline-success btn-sm state" data-source="{{restaurant.RestaurantID}}">Menu</button></a></td>
+                
+                <td><button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#restaurant-edit-modal-{{restaurant.RestaurantID}}" data-source="{{restaurant.RestaurantID}}" data-contentName="{{restaurant.RestaurantName}}" data-contentZip="{{restaurant.ZipCode}}" data-contentAddr="{{restaurant.Address}}"><i class="fa fa-pen fa-1" aria-hidden="true"></i></button></td>
+            
+                    <form id="restaurant-edit-form-{{restaurant.RestaurantID}}" action="{{url_for('update', restaurant_id=restaurant.RestaurantID)}}" method="POST">
+                        <div class="modal fade" id="restaurant-edit-modal-{{restaurant.RestaurantID}}" tabindex="-1" aria-labelledby="Label" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="Label">Edit Restaurant</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+            
+                            <div class="modal-body">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="restaurant-form-display-name">Name</span>
+                                    <input type="text" class="form-control" name="rest-name" placeholder="Restaurant Name" value="{{restaurant.RestaurantName}}" aria-label="restaurant-name" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="restaurant-form-display-addr">Address</span>
+                                    <input type="text" class="form-control" name="rest-addr" placeholder="Restaurant Address" value="{{restaurant.Address}}" aria-label="restaurant-addr" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="restaurant-form-display-zip">Zip Code</span>
+                                    <input type="text" class="form-control" name="rest-zip" placeholder="Restaurant Zip Code" value="{{restaurant.ZipCode}}" aria-label="restaurant-zip" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="rating-form-display-user">Your User Number</span>
+                                    <input type="text" class="form-control" name="rating-user-id" placeholder="Your given user number" aria-label="rating-user-id" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="restaurant-form-display-password">Password</span>
+                                    <input type="password" class="form-control" name="rest-pass" placeholder="Admin Password" aria-label="restaurant-password" aria-describedby="basic-addon1">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <!-- <button id="submit-restaurant" type="button" class="btn btn-primary">Save changes</button> -->
+                                <button value="Submit" class="btn btn-primary" type="submit" name="submit-edit">Save Changes</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </form>
+            
+                    <td><button class="btn btn-outline-secondary btn-sm remove" data-bs-toggle="modal" data-bs-target="#restaurant-delete-modal-{{restaurant.RestaurantID}}" data-source="{{restaurant.RestaurantID}}" type="button"><i class="fa fa-trash fa-1" aria-hidden="true"></i></button></td>
+                    <form id="restaurant-delete-form-{{restaurant.RestaurantID}}" action="{{url_for('delete', restaurant_id=restaurant.RestaurantID)}}" method="POST">
+                        <div class="modal fade" id="restaurant-delete-modal-{{restaurant.RestaurantID}}" tabindex="-1" aria-labelledby="Label" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="Label">Delete Restaurant</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="rating-form-display-user">Your User Number</span>
+                                    <input type="text" class="form-control" name="rating-user-id" placeholder="Your given user number" aria-label="rating-user-id" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="restaurant-form-display-password">Password</span>
+                                    <input type="password" class="form-control" name="rest-pass" placeholder="Admin Password" aria-label="restaurant-password" aria-describedby="basic-addon1">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button value="Submit" class="btn btn-primary" type="submit" name="submit-delete">Delete Restaurant</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </form>
+            </tr>
+        {% endfor %}
+        
+        </tbody>
+    </table>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+            <p class="text-muted"><small>Team 53: The Fantastic Four</small></p>
+      </div>
+    </footer>
+  </body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='script/modal.js') }}"></script>
+
+</html>
